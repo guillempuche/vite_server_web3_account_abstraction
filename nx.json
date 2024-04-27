@@ -1,49 +1,53 @@
 {
-  "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "namedInputs": {
-    "default": ["{projectRoot}/**/*", "sharedGlobals"],
-    "production": [
-      "default",
-      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
-      "!{projectRoot}/tsconfig.spec.json",
-      "!{projectRoot}/.eslintrc.json",
-      "!{projectRoot}/eslint.config.js"
-    ],
-    "sharedGlobals": []
-  },
-  "plugins": [
-    {
-      "plugin": "@nx/vite/plugin",
-      "options": {
-        "buildTargetName": "build",
-        "testTargetName": "test",
-        "serveTargetName": "serve",
-        "previewTargetName": "preview",
-        "serveStaticTargetName": "serve-static"
-      }
-    },
-    {
-      "plugin": "@nx/eslint/plugin",
-      "options": {
-        "targetName": "lint"
-      }
-    }
-  ],
-  "generators": {
-    "@nx/react": {
-      "application": {
-        "babel": true,
-        "style": "tailwind",
-        "linter": "eslint",
-        "bundler": "vite"
-      },
-      "component": {
-        "style": "tailwind"
-      },
-      "library": {
-        "style": "tailwind",
-        "linter": "eslint"
-      }
-    }
-  }
+	"pluginsConfig": {
+		"@nx/js": {
+			"analyzeSourceFiles": true
+		}
+	},
+	"$schema": "./node_modules/nx/schemas/nx-schema.json",
+	"extends": "nx/presets/npm.json",
+	"namedInputs": {
+		"default": ["{projectRoot}/**/*", "sharedGlobals"],
+		"production": [
+			"default",
+			"!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+			"!{projectRoot}/tsconfig.spec.json"
+		],
+		"sharedGlobals": []
+	},
+	"plugins": [
+		{
+			"plugin": "@nx/vite/plugin",
+			"options": {
+				"buildTargetName": "build",
+				"testTargetName": "test",
+				"serveTargetName": "serve",
+				"previewTargetName": "preview",
+				"serveStaticTargetName": "serve-static"
+			}
+		}
+	],
+	"generators": {
+		"@nx/react": {
+			"application": {
+				"babel": true,
+				"style": "tailwind",
+				"bundler": "vite"
+			},
+			"component": {
+				"style": "tailwind"
+			},
+			"library": {
+				"style": "tailwind",
+				"linter": "eslint"
+			}
+		}
+	},
+	"targetDefaults": {
+		"@nx/esbuild:esbuild": {
+			"cache": true,
+			"dependsOn": ["^build"],
+			"inputs": ["production", "^production"]
+		}
+	}
 }

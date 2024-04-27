@@ -1,21 +1,25 @@
 {
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "allowJs": false,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "types": ["vite/client", "vitest"]
-  },
-  "files": [],
-  "include": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.spec.json"
-    }
-  ],
-  "extends": "../../tsconfig.base.json"
+	"compilerOptions": {
+		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		// "jsx": "react-jsx",
+		"jsx": "preserve",
+		"allowJs": true,
+		"allowSyntheticDefaultImports": true,
+		"esModuleInterop": false,
+		"noEmit": true, // Vite takes care of building everything, not tsc
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"types": ["vite/client"]
+	},
+	"files": [],
+	"include": ["vite.config.mts"],
+	"references": [
+		{
+			"path": "./tsconfig.app.json"
+		},
+		{
+			"path": "./tsconfig.spec.json"
+		}
+	],
+	"extends": "../../tsconfig.base.json"
 }

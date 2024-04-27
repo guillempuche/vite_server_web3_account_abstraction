@@ -1,0 +1,9 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "curriculum_web3_server"
+main = "src/index.ts"
+compatibility_date = "2024-4-27"
+zone_name = "guillempuche.com"
+route = "web3.guillempuche.com/*"
+
+[env]
+port = 3001
