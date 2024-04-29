@@ -1,114 +1,88 @@
-import { AvatarGenerator } from 'random-avatar-generator'
+import type { MultiOwnerModularAccount } from '@alchemy/aa-accounts'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import userbase from 'userbase-js'
+import {
+	useAccount,
+	useBalance,
+	useContractWrite,
+	useSimulateContract,
+} from 'wagmi'
 
-import { GaslessMinter, WalletDisplay } from '../components'
-import { useAuth } from '../providers'
+import {
+	NftProvider,
+	abiNft,
+	nftAddress,
+	useSmartAccountProvider,
+} from '../providers'
 
 export function PageHome() {
-	const { user, logout } = useAuth()
 	const navigate = useNavigate()
-	const [walletViewActive, setWalletViewActive] = useState(true)
-	const generator = new AvatarGenerator()
+	// const [account, setAccount] = useState<MultiOwnerModularAccount | null>(null)
+	const { extendedSmartAccountClient } = useSmartAccountProvider()
+	const { data: nftBalance } = useBalance({
+		address: nftAddress,
+	})
+	const account = useAccount()
+	const result = useSimulateContract({
+		address: nftAddress, // NFT's contract Address
+		abi: abiNft,
+		functionName: 'safeMint',
+		args: ['XXX'], // Your Address
+	})
 
-	function handleLogout() {
-		try {
-			userbase
-				.signOut()
-				.then(() => {
-					console.log('User logged out!')
-					logout()
-					navigate('/')
-				})
-				.catch(err => console.error(err))
-		} catch (error) {
-			console.log(error)
-		}
+	/**
+	 * Get access to the curriculum allowing the smart account to have access to the NFT.
+	 *
+	 * Docs https://accountkit.alchemy.com/using-smart-accounts/send-user-operations.html
+	 */
+	async function getAccessToCurriculum() {
+		// const userOperation = await extendedSmartAccountClient.sendUserOperation({
+		// 	uo: {
+		// 		target: nftAddress,
+		// 		data: getNftUserOperationoCallData(extendedSmartAccountClient),
+		// 		value: 0n, // The Alchemy's Gas Manager sponsors the gas
+		// 	},
+		// })
+		// const txHash =
+		// 	await extendedSmartAccountClient.waitForUserOperationTransaction(
+		// 		userOperation,
+		// 	)
+		// console.log(
+		// 	`Transaction hash: ${txHash} for user operation: ${userOperation}`,
+		// )
+	}
+
+	const isAccountHaveAccessToCurriculum = () => (nftBalance?.decimals ?? 0) > 0
+
+	async function mintNft() {
+		useContractWrite
 	}
 
 	return (
 		<div>
-			{user?.isLoggedIn ? (
-				<div className='font-mono text-2xl mt-8'>
-					<div className='flex items-center justify-center'>
-						<div className='avatar'>
-							<div className='rounded-full ml-12'>
-								<img
-									src={generator.generateRandomAvatar(user?.userId)}
-									alt='User Avatar'
-								/>
-							</div>
-						</div>
-						<div className='flex flex-col ml-6 gap-2'>
-							<div className='text-black'>
-								<b>User:</b> {user?.username}
-							</div>
-							<div className='text-black'>
-								<b>SCW :</b>{' '}
-								<a
-									className='link link-secondary'
-									href={`https://sepolia.etherscan.io/address/${user?.scwAddress}`}
-									target='_blank'
-									rel='noreferrer'
-								>
-									{user?.scwAddress}
-								</a>
-							</div>
-							<div className='text-black'>
-								{user?.isLoggedIn ? (
-									<button
-										type='button'
-										className='btn btn-outline'
-										onClick={handleLogout}
-									>
-										Log out
-									</button>
-								) : (
-									''
-								)}
-							</div>
-						</div>
-					</div>
-					<div className='tabs items-center flex justify-center mb-[-25px]'>
-						<button
-							type='button'
-							className={`tab tab-lg tab-lifted text-2xl ${
-								walletViewActive ? 'tab-active text-white' : ''
-							}`}
-							onClick={() => setWalletViewActive(true)}
-							aria-pressed={walletViewActive}
-						>
-							Your Wallet
-						</button>
-						<button
-							type='button'
-							className={`tab tab-lg tab-lifted text-2xl ${
-								walletViewActive ? '' : 'tab-active text-white'
-							}`}
-							onClick={() => setWalletViewActive(false)}
-							aria-pressed={!walletViewActive}
-						>
-							Mint an NFT
-						</button>
-					</div>
-					{/* <div className='divider mx-16 mb-8'></div> */}
-					{walletViewActive ? <WalletDisplay /> : <GaslessMinter />}
-				</div>
-			) : (
-				<div>
-					<div className='text-black flex flex-col items-center justify-center mt-36 mx-8 text-4xl font-mono'>
-						Please log in to continue! 👀
-						<button
-							type='button'
-							onClick={() => navigate('/login')}
-							className='btn mt-6 text-white'
-						>
-							Login
-						</button>
-					</div>
-				</div>
-			)}
+			<div>Home</div>
+			<div>
+				Access to {nftAddress} is {isAccountHaveAccessToCurriculum().toString()}
+			</div>
+			<div>
+				NFT "
+				<a
+					href='https://testnets.opensea.io/assets/sepolia/0x1ee2cb4badb50f6f3b9ed57e0f444cb8c5e6662e/0'
+					target='_blank'
+					rel='noreferrer'
+				>
+					Guillem Curriculum
+				</a>
+				" {nftAddress} balance is {nftBalance?.decimals}
+			</div>
+			{account.address !== undefined ? (
+				<NftProvider toAddress={account.address}>
+					<div>Logic to mint the NFT</div>
+				</NftProvider>
+			) : null}
+			<div>
+				Curriculum content (unlocked or locked according to the NFT ownership)
+			</div>
 		</div>
 	)
 }

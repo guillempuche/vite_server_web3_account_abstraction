@@ -1,0 +1,23 @@
+{
+	"name": "Guillem's Dev Journey",
+	"description": "Hey there! I'm Guillem, and this NFT is all about my 5-year adventure as a fullstack developer. I've gotten my hands dirty with everything from web to mobile apps using some of the coolest tech stacks out there.",
+	"image": "https://ipfs.filebase.io/ipfs/Qmaa86J2MNjgyVhMsnJEAcfB3K2ZDnVKMQ3e5SrZwsiK6u",
+	"attributes": [
+		{
+			"trait_type": "Experience",
+			"value": "5 years"
+		},
+		{
+			"trait_type": "Role",
+			"value": "Fullstack Developer"
+		},
+		{
+			"trait_type": "Languages",
+			"value": "Typescript, Dart, Python, HTML, CSS"
+		},
+		{
+			"trait_type": "Frameworks",
+			"value": "React, React Native, NodeJS, Flutter, AngularDart, Nx"
+		}
+	]
+}

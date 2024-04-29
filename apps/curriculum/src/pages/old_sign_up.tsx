@@ -5,7 +5,7 @@ import userbase from 'userbase-js'
 
 import { Spinner } from '../components'
 import { chainClient, simpleAccountFactoryAbi, useAuth } from '../providers'
-import type { UserProps } from '../types'
+import type { UserAccount } from '../types'
 
 export function PageSignupForm() {
 	const { user, login } = useAuth()
@@ -45,7 +45,7 @@ export function PageSignupForm() {
 			const privateKey = secp.utils.randomPrivateKey()
 			const privateKeyHex = secp.etc.bytesToHex(privateKey)
 
-			const userData: UserProps = {
+			const userData: UserAccount = {
 				privateKey: privateKeyHex,
 			}
 

@@ -1,43 +1,38 @@
-import { sepolia } from '@alchemy/aa-core'
-import { ConnectKitProvider, getDefaultConfig } from 'connectkit'
+import { ConnectKitProvider } from 'connectkit'
 import type { ReactNode } from 'react'
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
-import { WagmiProvider } from 'wagmi'
 
+import { useAccount } from 'wagmi'
+import { Layout } from './components'
 import { PageHome, PageLogin } from './pages'
-import { AuthProvider, useAuth, wagmiConfig } from './providers'
 // import { useSession } from './providers/session'
 
 export const App = () => {
 	return (
-		<AuthProvider>
-			<WagmiProvider config={wagmiConfig}>
-				<ConnectKitProvider mode='dark'>
-					<Routes>
-						{/* <Route path='/' element={<Navigate to='/home' replace />} /> */}
-						<Route path='/' element={<div>hola</div>} />
-						<Route path='/login' element={<PageLogin />} />
-						<Route
-							path='/home'
-							element={
-								<RequireAuth>
-									<PageHome />
-								</RequireAuth>
-							}
-						/>
-					</Routes>
-				</ConnectKitProvider>
-			</WagmiProvider>
-		</AuthProvider>
+		<Routes>
+			<Route path='/' element={<Navigate to='/home' replace />} />
+			<Route path='/login' element={<PageLogin />} />
+			<Route
+				path='/home'
+				element={
+					<RequireAuth>
+						<Layout>
+							<PageHome />
+						</Layout>
+					</RequireAuth>
+				}
+			/>
+			<Route path='*' element={<h1>Page not found</h1>} />
+		</Routes>
 	)
 }
 
 const RequireAuth = ({ children }: { children: ReactNode }) => {
 	const location = useLocation()
-	const { user } = useAuth()
+	const { isDisconnected } = useAccount()
 
-	if (!user) {
-		console.debug('User not logged. Redirecting to the login page...')
+	if (isDisconnected) {
+		console.debug("Account isn't connected. Redirecting to the login page...")
 
 		return <Navigate to='/login' state={{ from: location }} replace />
 	}

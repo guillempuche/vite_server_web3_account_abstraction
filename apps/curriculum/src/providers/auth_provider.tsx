@@ -5,65 +5,55 @@ import {
 	useEffect,
 	useState,
 } from 'react'
-import userbase from 'userbase-js'
+import userbase, { type Session } from 'userbase-js'
 
-interface User {
-	username: string
-	isLoggedIn: boolean
-	userId: string
-	scwAddress?: string
-}
+import type { UserDatabase } from '../types'
 
-interface AuthContextType {
-	user: User | null
-	login: (user: User) => void
+interface IAuthContext {
+	user: UserDatabase | null
+	login: (user: UserDatabase) => void
 	logout: () => void
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined)
+const AuthContext = createContext<IAuthContext | undefined>(undefined)
 
-export function useAuth(): AuthContextType {
+function useAuth(): IAuthContext {
 	const context = useContext(AuthContext)
-	if (!context) {
-		throw new Error('useAuth must be used within an AuthProvider')
-	}
+
+	if (!context) throw new Error('useAuth must be used within an AuthProvider')
+
 	return context
 }
 
-interface AuthProviderProps {
+function AuthProvider({
+	children,
+}: {
 	children: ReactNode
-}
+}) {
+	const [user, setUser] = useState<UserDatabase | null>(null)
 
-export function AuthProvider({ children }: AuthProviderProps) {
-	const [user, setUser] = useState<User | null>(null)
 	useEffect(() => {
+		console.log(import.meta.env.VITE_USERBASE_APP_ID)
 		userbase
 			.init({
 				appId: import.meta.env.VITE_USERBASE_APP_ID,
 			})
-			.then((session: any) => {
+			.then((session: Session) => {
 				if (session.user) {
-					// there is a valid active session
-					console.log(
-						`Userbase login succesful. ✅ Welcome, ${session.user.username}!`,
-					)
-					console.log(session.user)
+					console.log('UserbaseJS login succesful', session.user)
 					const userInfo = {
-						username: session.user.username,
 						isLoggedIn: true,
+						username: session.user.username,
 						userId: session.user.userId,
-						scwAddress: session.user.profile.scwAddress,
+						scwAddress: session.user.profile?.scwAddress,
 					}
 					login(userInfo)
-					console.log(
-						`Logged out in the authprovider, here is the user ${user?.username}`,
-					)
 				}
 			})
 			.catch(e => console.error(e))
-	}, [user?.username])
+	}, [])
 
-	const login = (user: User) => {
+	const login = (user: UserDatabase) => {
 		setUser(user)
 	}
 

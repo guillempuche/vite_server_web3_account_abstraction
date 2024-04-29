@@ -1,5 +1,7 @@
 import { nxViteTsPaths } from '@nx/vite/plugins/nx-tsconfig-paths.plugin'
+import inject from '@rollup/plugin-inject'
 import react from '@vitejs/plugin-react'
+import { visualizer } from 'rollup-plugin-visualizer'
 import { defineConfig } from 'vite'
 
 export default defineConfig({
@@ -17,12 +19,31 @@ export default defineConfig({
 	//   host: 'localhost',
 	// },
 
-	plugins: [react(), nxViteTsPaths()],
+	plugins: [
+		nxViteTsPaths(),
+		react(),
 
-	// Uncomment this if you are using workers.
-	// worker: {
-	//  plugins: [ nxViteTsPaths() ],
-	// },
+		// For Web3 logic
+		inject({
+			Buffer: ['buffer', 'Buffer'],
+			process: 'process/browser',
+		}),
+
+		// Check the size of all dependencies
+		visualizer({
+			open: true,
+			brotliSize: true,
+			title: 'Bundle Stats',
+			filename: './dist/bundle_size.html',
+		}),
+	],
+
+	resolve: {
+		alias: {
+			buffer: 'buffer/',
+			util: 'util/',
+		},
+	},
 
 	build: {
 		outDir: '../../dist/apps/curriculum',
@@ -31,19 +52,13 @@ export default defineConfig({
 			transformMixedEsModules: true,
 		},
 	},
-
-	// test: {
-	// 	globals: true,
-	// 	cache: {
-	// 		dir: '../../node_modules/.vitest',
-	// 	},
-	// 	environment: 'jsdom',
-	// 	include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-
-	// 	reporters: ['default'],
-	// 	coverage: {
-	// 		reportsDirectory: '../../coverage/apps/curriculum',
-	// 		provider: 'v8',
-	// 	},
-	// },
+	optimizeDeps: {
+		include: ['buffer', 'util'],
+		esbuildOptions: {
+			define: {
+				// Enable NodeJS global to browser `globalThis` for Web3 authentication services
+				global: 'globalThis',
+			},
+		},
+	},
 })

@@ -1,6 +1,11 @@
 {
 	"compilerOptions": {
-		"lib": ["ESNext", "DOM", "DOM.Iterable"],
+		"lib": [
+			"ESNext",
+			"DOM",
+			"DOM.Iterable",
+			"WebWorker" // For environment variables https://vitejs.dev/guide/env-and-mode.html#env-variables-and-modes
+		],
 		// "jsx": "react-jsx",
 		"jsx": "preserve",
 		"allowJs": true,
@@ -9,10 +14,14 @@
 		"noEmit": true, // Vite takes care of building everything, not tsc
 		"resolveJsonModule": true,
 		"isolatedModules": true,
-		"types": ["vite/client"]
+		"types": [
+			"vite/client"
+		]
 	},
 	"files": [],
-	"include": ["vite.config.mts"],
+	"include": [
+		"vite.config.mts"
+	],
 	"references": [
 		{
 			"path": "./tsconfig.app.json"

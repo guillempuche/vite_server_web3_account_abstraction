@@ -37,7 +37,13 @@
 		}
 	},
 	"files": {
-		"ignore": [".nx/**/*", ".yarn/*", "/coverage", "dist", "node_modules"],
+		"ignore": [
+			".nx/**/*",
+			".yarn/*",
+			"/coverage",
+			"dist",
+			"node_modules"
+		],
 		"ignoreUnknown": true
 	}
 }
